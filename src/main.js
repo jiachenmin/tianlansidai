@@ -23,7 +23,13 @@ if (process.env.NODE_ENV !== 'production') require('@/mock')
 require('@/mock')
 
 Vue.use(iView, {
-  i18n: (key, value) => i18n.t(key, value)
+  i18n: function(path, options) {
+    console.log(i18n);
+      let value = i18n.t(path, options);
+      if (value !== null && value !== undefined) return value;
+
+      return '';
+  }
 })
 Vue.use(ViewUI)
 Vue.use(TreeTable)

@@ -11,9 +11,15 @@ const baseApi = {
   user: {
     login: (M_BASE_PATH.concat('user/login'))
   },
+  children: {
+    getChildren: (M_BASE_PATH.concat('child'))
+  },
   // ------ user center --------
   userCenter: {
     getUserOrgTree: (M_BASE_PATH.concat('user/tree')) // 获取用户组织树
+  },
+  dataCenter: {
+    getDataCenter: (M_BASE_PATH.concat('resource/type'))
   }
 }
 

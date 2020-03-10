@@ -81,9 +81,9 @@ export default {
           userName,
           password
         }).then(res => {
-          const data = res.data
+          const { data } = res.data
           commit('setToken', data.token)
-          resolve()
+          resolve(data)
         }).catch(err => {
           reject(err)
         })
@@ -109,7 +109,7 @@ export default {
     getUserInfo ({ state, commit }) {
       return new Promise((resolve, reject) => {
         try {
-          getUserInfo(state.token).then(res => {
+          getUserInfo('super_admin').then(res => {
             const data = res.data
             commit('setAvatar', data.avatar)
             commit('setUserName', data.name)

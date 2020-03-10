@@ -66,16 +66,16 @@ export default [
           icon: 'ios-people',
           title: '用户中心'
         },
-        component: () => import('@/view/pages/system-configs/user-center')
+        component: () => import('@/pages/system-configs/user-center')
       },
       {
-        path: 'user_centers',
-        name: 'user_centers',
+        path: 'data_centers',
+        name: 'data_centers',
         meta: {
           icon: 'ios-cog',
           title: '资源中心'
         },
-        component: () => import('@/view/pages/system-configs/data-center')
+        component: () => import('@/pages/system-configs/data-center')
       },
       {
         path: 'power-center',
@@ -84,16 +84,16 @@ export default [
           icon: 'ios-lock',
           title: '权限中心'
         },
-        component: () => import('@/pages/component/power-center')
+        component: () => import('@/pages/system-configs/power-center')
       },
       {
-        path: 'data-center',
-        name: 'data-center',
+        path: 'root-center',
+        name: 'root-center',
         meta: {
           icon: 'ios-folder',
           title: '元数据中心'
         },
-        component: () => import('@/pages/component/data-center')
+        component: () => import('@/pages/system-configs/root-center')
       }
     ]
   },
@@ -113,7 +113,7 @@ export default [
           icon: 'ios-list-box',
           title: '运营区域管理'
         },
-        component: () => import('@/view/application-center/deployment-center')
+        component: () => import('@/pages/application-center/deployment-center')
       },
       {
         path: 'monitoring_center',
@@ -122,7 +122,7 @@ export default [
           icon: 'ios-medical',
           title: '体验项目管理'
         },
-        component: () => import('@/view/application-center/monitoring-center')
+        component: () => import('@/pages/application-center/monitoring-center')
       },
       {
         path: 'questionnaire-management',
@@ -131,7 +131,7 @@ export default [
           icon: 'ios-paper',
           title: '调查问卷管理'
         },
-        component: () => import('@/view/application-center/questionnaire-management')
+        component: () => import('@/pages/application-center/questionnaire-management')
       },
       {
         path: 'intervention-plan',
@@ -140,7 +140,7 @@ export default [
           icon: 'md-archive',
           title: '干预方案管理'
         },
-        component: () => import('@/view/application-center/intervention-plan')
+        component: () => import('@/pages/application-center/intervention-plan')
       },
       {
         path: 'coupon-management',
@@ -149,33 +149,13 @@ export default [
           icon: 'md-pricetags',
           title: '优惠卷管理'
         },
-        component: () => import('@/view/application-center/coupon-management')
+        component: () => import('@/pages/application-center/coupon-management')
       }
     ]
   },
   {
-    path: '/message',
-    name: 'message',
-    component: Main,
-    meta: {
-      hideInBread: true,
-      hideInMenu: true
-    },
-    children: [
-      {
-        path: 'message_page',
-        name: 'message_page',
-        meta: {
-          icon: 'md-notifications',
-          title: '消息中心'
-        },
-        component: () => import('@/view/single-page/message/index.vue')
-      }
-    ]
-  },
-  {
-    path: '/components',
-    name: 'components',
+    path: '/daily-operation',
+    name: 'daily-operation',
     meta: {
       icon: 'md-aperture',
       title: '日常运营'
@@ -189,7 +169,7 @@ export default [
           icon: 'ios-book',
           title: '学校管理'
         },
-        component: () => import('@/pages/component/school')
+        component: () => import('@/pages/daily-operation/school')
       },
       {
         path: 'hospital',
@@ -198,7 +178,7 @@ export default [
           icon: 'ios-heart',
           title: '医院管理'
         },
-        component: () => import('@/pages/component/hospital')
+        component: () => import('@/pages/daily-operation/hospital')
       },
       {
         path: 'children',
@@ -207,7 +187,7 @@ export default [
           icon: 'ios-people',
           title: '孩子管理'
         },
-        component: () => import('@/pages/component/children')
+        component: () => import('@/pages/daily-operation/children')
       },
       {
         path: 'commissioner',
@@ -216,7 +196,7 @@ export default [
           icon: 'md-people',
           title: '普查专员管理'
         },
-        component: () => import('@/pages/component/commissioner')
+        component: () => import('@/pages/daily-operation/commissioner')
       },
       {
         path: 'smallroom',
@@ -225,7 +205,7 @@ export default [
           icon: 'ios-home',
           title: '小屋管理'
         },
-        component: () => import('@/pages/component/smallroom')
+        component: () => import('@/pages/daily-operation/smallroom')
       },
       {
         path: 'task',
@@ -234,7 +214,7 @@ export default [
           icon: 'ios-create',
           title: '普查任务'
         },
-        component: () => import('@/pages/component/task')
+        component: () => import('@/pages/daily-operation/task')
       },
       {
         path: 'content',
@@ -243,7 +223,7 @@ export default [
           icon: 'md-paper',
           title: '内容管理'
         },
-        component: () => import('@/pages/component/content')
+        component: () => import('@/pages/daily-operation/content')
       }
 
     ]
@@ -263,7 +243,7 @@ export default [
           icon: 'ios-bug',
           title: '日志管理'
         },
-        component: () => import('@/view/error-store/error-store.vue')
+        component: () => import('@/pages/error-store/error-store.vue')
       }
     ]
   },
@@ -285,7 +265,7 @@ export default [
           notCache: true,
           beforeCloseName: 'before_close_normal'
         },
-        component: () => import('@/view/argu-page/params.vue')
+        component: () => import('@/pages/argu-page/params.vue')
       },
       {
         path: 'query',
@@ -295,7 +275,7 @@ export default [
           title: route => `{{ query }}-${route.query.id}`,
           notCache: true
         },
-        component: () => import('@/view/argu-page/query.vue')
+        component: () => import('@/pages/argu-page/query.vue')
       }
     ]
   },
@@ -305,7 +285,7 @@ export default [
     meta: {
       hideInMenu: true
     },
-    component: () => import('@/view/error-page/401.vue')
+    component: () => import('@/pages/error-page/401.vue')
   },
   {
     path: '/500',
@@ -313,7 +293,7 @@ export default [
     meta: {
       hideInMenu: true
     },
-    component: () => import('@/view/error-page/500.vue')
+    component: () => import('@/pages/error-page/500.vue')
   },
   {
     path: '*',
@@ -321,6 +301,6 @@ export default [
     meta: {
       hideInMenu: true
     },
-    component: () => import('@/view/error-page/404.vue')
+    component: () => import('@/pages/error-page/404.vue')
   }
 ]

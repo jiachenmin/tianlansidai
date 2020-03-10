@@ -92,7 +92,7 @@ class HttpRequest extends ApiCaller {
         Object.assign(config.headers, { access_token: token })
       }
       // eslint-disable-line
-      console.log('requset =>', config)
+      // console.log('requset =>', config)
       this.queue[url] = true
       return config
     }, error => Promise.reject(error))
@@ -117,7 +117,7 @@ class HttpRequest extends ApiCaller {
         })
       }
       // eslint-disable-line
-      console.log('response =>', res)
+      // console.log('response =>', res)
       return { data, status, ...mockParams }
     }, error => {
       // eslint-disable-next-line
