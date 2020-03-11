@@ -11,7 +11,7 @@
           <Divider />
 
           <ul class="date-list">
-            <li v-for="(item,index) in data1" :key="item._id">
+            <li v-for="(item,index) in data1" :key="item._id" @click="getkey($event,item._id)">
               <router-link to>
                 <Button type="text" ghost>{{item.name}}</Button>
               </router-link>
@@ -39,6 +39,9 @@ export default {
   created() {
     this.DogetDataCenter();
   },
+  // updated(){
+  //   this.getkey();
+  // },
   data() {
     return {
       // name:'',
@@ -65,7 +68,8 @@ export default {
           key: "caozuo"
         }
       ],
-      data2: []
+      data2: [],
+      typeId:'5c9c3339ab84d455fc483b82'
     };
   },
   methods: {
@@ -75,8 +79,8 @@ export default {
           var result = res.data;
           console.log(result);
           this.data1 = result.data;
-          const params = {
-            typeId: this.data1[0]._id,
+          var params = {
+            typeId: this.typeId,
             // keyWord: '',
             pageNum: 1,
             pageSize: 10
@@ -92,6 +96,18 @@ export default {
           });
         }
       });
+    },
+    getkey(e,k){
+// console.log(k)
+var params={
+  typeId:k,
+  pageNum:1,
+  pageSize:10
+}
+this.typeId='';
+this.typeId=params.typeId;
+console.log(params.typeId)
+this.DogetDataCenter();
     }
   }
 };
