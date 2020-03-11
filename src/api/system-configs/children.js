@@ -1,12 +1,9 @@
 import axios from '@/libs/api.request'
 import Api from '@/api/base/api-config.js'
-export const getChildren = () => {
+export const getChildren = (params) => {
   return axios.req({
-    state: true,
+    params,
     method: 'get',
-    url: Api.children.getChildren,
-    keyWord: '',
-    pageNum: 1,
-    pageSize: 10
+    url: Api.children.getChildren
   })
 }

@@ -12,7 +12,7 @@ import { getChildren } from '@/api/system-configs/children.js'
                 columns1: [
                     {
                         title: '#',
-                        key: 'index'
+                        key: ''
                     },
                     {
                         title: '学生姓名',
@@ -20,11 +20,11 @@ import { getChildren } from '@/api/system-configs/children.js'
                     },
                     {
                         title: '性别',
-                        key: 'address'
+                        key: 'sex'
                     },
                    {
                         title: '学生编号',
-                        key: 'index'
+                        key: 'identityCode'
                     },
                      {
                         title: '学校名称',
@@ -36,7 +36,7 @@ import { getChildren } from '@/api/system-configs/children.js'
                     },
                      {
                         title: '生日',
-                        key: 'index'
+                        key: 'birthTime'
                     },
                      {
                         title: '操作',
@@ -44,54 +44,7 @@ import { getChildren } from '@/api/system-configs/children.js'
                     },
                 ],
                 data2: [
-                    {
-                        name: 'John Brown',
-                        age: 18,
-                        address: 'New York No. 1 Lake Park',
-                        date: '2016-10-03'
-                    },
-                    {
-                        name: 'Jim Green',
-                        age: 24,
-                        address: 'London No. 1 Lake Park',
-                        date: '2016-10-01'
-                    },
-                    {
-                        name: 'Joe Black',
-                        age: 30,
-                        address: 'Sydney No. 1 Lake Park',
-                        date: '2016-10-02'
-                    },
-                    {
-                        name: 'Jon Snow',
-                        age: 26,
-                        address: 'Ottawa No. 2 Lake Park',
-                        date: '2016-10-04'
-                    },
-                    {
-                        name: 'John Brown',
-                        age: 18,
-                        address: 'New York No. 1 Lake Park',
-                        date: '2016-10-03'
-                    },
-                    {
-                        name: 'Jim Green',
-                        age: 24,
-                        address: 'London No. 1 Lake Park',
-                        date: '2016-10-01'
-                    },
-                    {
-                        name: 'Joe Black',
-                        age: 30,
-                        address: 'Sydney No. 1 Lake Park',
-                        date: '2016-10-02'
-                    },
-                    {
-                        name: 'Jon Snow',
-                        age: 26,
-                        address: 'Ottawa No. 2 Lake Park',
-                        date: '2016-10-04'
-                    }
+
                 ]
             }
         },
@@ -99,7 +52,9 @@ import { getChildren } from '@/api/system-configs/children.js'
 doGetUserOrgTree(){
   getChildren().then(res=>{
  if(res.success){
-console.log(res)
+   var result=res.data;
+console.log(result);
+this.data2=result.data.list;
  }
   })
 }

@@ -19,7 +19,8 @@ const baseApi = {
     getUserOrgTree: (M_BASE_PATH.concat('user/tree')) // 获取用户组织树
   },
   dataCenter: {
-    getDataCenter: (M_BASE_PATH.concat('resource/type'))
+    getDataCenter: (M_BASE_PATH.concat('resource/type')),
+    getResourceList: (M_BASE_PATH.concat('resource/list'))
   }
 }
 

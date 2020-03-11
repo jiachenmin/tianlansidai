@@ -41,7 +41,7 @@ class ApiCaller {
     const timestampWithSn = `${this.getTimestamp()}${this.getSequenceNumber()}`
     const prefix = 'AZURE-RiBBON-WEB'
     return {
-      access_token: getToken(),
+      token: getToken(),
       requestId: `${prefix}-${purpose || 'REQUEST'}-${timestampWithSn}`,
       traceId: `${prefix}-${purpose || 'TRACE'}-${timestampWithSn}`
     }
@@ -89,7 +89,7 @@ class HttpRequest extends ApiCaller {
       const token = getToken()
       // 拦截请求并获取token设置到请求头上
       if (token) {
-        Object.assign(config.headers, { access_token: token })
+        Object.assign(config.headers, { 'x-access_token': token })
       }
       // eslint-disable-line
       // console.log('requset =>', config)
