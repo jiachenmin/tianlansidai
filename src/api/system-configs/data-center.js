@@ -14,3 +14,24 @@ export const getResourceList = (params) => {
     url: Api.dataCenter.getResourceList
   })
 }
+export const deleteResource = (params) => {
+  return axios.req({
+    // params,
+    method: 'delete',
+    url: Api.dataCenter.deleteResource.concat(params)
+  })
+}
+export const addResource = (params) => {
+  return axios.req({
+    params,
+    method: 'post',
+    url: Api.dataCenter.deleteResource
+  })
+}
+export const getSearch = (params) => {
+  return axios.req({
+    params,
+    method: 'get',
+    url: Api.dataCenter.getResourceList
+  })
+}

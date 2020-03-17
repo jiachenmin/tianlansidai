@@ -16,12 +16,45 @@
       <i-col span="18" class-name="right-box">
         <Card>
                <div class="title">
-            <i-col span="10">
+            <i-col span="13">
               <h3>{{name}}</h3>
+            </i-col>
+             <i-col span="8">
+              <Input search enter-button="搜索" placeholder="请输入你要搜索的内容..." v-model="keyWord" @on-search="getSearchdata"/>
+            </i-col>
+            <i-col>
+               <Button type="success" @click="modal1 = true">添加</Button>
+            <Modal
+                v-model="modal1"
+                title="添加资源"
+                @on-ok="ok"
+                @on-cancel="cancel">
+                 <Form ref="formValidate" :model="formValidate" :rules="ruleValidate" :label-width="80">
+        <FormItem label="名称" prop="name" disabled="true">
+            <Input v-model="formValidate.name" placeholder="Enter your name"></Input>
+        </FormItem>
+        <FormItem label="编号" prop="mail">
+            <Input v-model="formValidate.mail" placeholder="Enter your e-mail"></Input>
+        </FormItem>
+                <FormItem label="备注" prop="desc">
+            <Input v-model="formValidate.desc" type="textarea" :autosize="{minRows: 2,maxRows: 5}" placeholder="Enter something..."></Input>
+        </FormItem>
+    </Form>
+            </Modal>
             </i-col>
           </div>
           <Divider />
           <Table :columns="columns1" border :data="resourceDate">
+              <template slot-scope="{ row, index }" slot="action">
+            <Button type="primary" size="small" style="margin-right: 5px">查看</Button>
+             <Poptip
+        confirm
+        title="您确定删除这条内容吗？"
+        @on-ok="doDeleteResource"
+        transfer>
+        <Button type="error" size="small">删除</Button>
+    </Poptip>
+        </template>
           </Table>
           <Page :current="pageInfo.page" :pageSize="pageInfo.size" :total="pageInfo.total" @on-change="onPageChange" on-page-size-change="onPageSizeChange" show-sizer show-total/>
         </Card>
@@ -31,19 +64,35 @@
 </template>
 <script>
 import {
-  getDataCenter, getResourceList
+  getDataCenter, getResourceList, deleteResource, getSearch
 } from '@/api/system-configs/data-center.js'
 
 export default {
   created () {
     this.doGetResourceDate()
   },
-  // updated(){
-  //   this.getkey();
-  // },
   data () {
     return {
       name: '',
+      keyWord: '',
+      formValidate: {
+        name: '',
+        mail: '',
+        desc: ''
+      },
+      ruleValidate: {
+                    name: [
+                        { required: true, message: '请输入名称', trigger: 'blur'}
+                    ],
+                    mail: [
+                        { required: true, message: 'Mailbox cannot be empty', trigger: 'blur' }
+                        // { type: 'text', message: 'Incorrect email format', trigger: 'blur' }
+                    ],
+                      desc: [
+                        { required: true, message: 'Please enter a personal introduction', trigger: 'blur' },
+                        { type: 'string', message: 'Introduce no less than 20 words', trigger: 'blur' }
+                    ]
+                },
       resourceTree: [],
       columns1: [
         {
@@ -64,7 +113,7 @@ export default {
         },
         {
           title: '操作',
-          key: 'caozuo'
+          slot: 'action'
         }
       ],
       pageInfo: {
@@ -73,46 +122,44 @@ export default {
         total: 0
       },
       resourceDate: [],
-      curryTypeId: ''
-    //   typeId:'5c9c3339ab84d455fc483b82'
+      curryTypeId: '',
+      modal1: false
     }
   },
   methods: {
+     ok () {
+                this.$Message.info('Clicked ok');
+            },
+            cancel () {
+                this.$Message.info('Clicked cancel');
+            },
     async doGetResourceDate () {
       const result = await getDataCenter()
       const { data } = result.data
-      console.log(data)
+      // console.log(data)
       this.resourceTree = data.map((elm, index) => {
         const params = {
           id: elm._id,
           title: elm.name,
           selected: false
         }
-        console.log(elm)
+        // console.log(params.id)
         if (!index) {
           params.selected = true
-        //   this.doGetResource({
-        //     pageNum: this.pageInfo.page,
-        //     pageSize: this.pageInfo.size,
-        //     typeId: params.id
-
-        //   })
-        this.getAtherData(null, params)
-this.name='' //这有问题
-        this.name = params.title
-
-}
+          this.getAtherData(null, params)
+        }
         return params
-
       })
     },
     getAtherData (selArr, selNode) {
       this.curryTypeId = selNode.id
+      // console.log(this.curryTypeId)
+      this.name = selNode.title
       this.doGetResource({
         pageNum: this.pageInfo.page,
         pageSize: this.pageInfo.size,
         typeId: this.curryTypeId
-})
+      })
     },
     onPageChange (page) {
       this.pageInfo.page = page
@@ -122,60 +169,60 @@ this.name='' //这有问题
         pageNum: page,
         pageSize: this.pageInfo.size,
         typeId: this.curryTypeId
-})
+      })
     },
     onPageSizeChange (size) {
       this.pageInfo.size = size
-      console.log(size)
+      // console.log(size)
       this.doGetResource({
         pageNum: this.pageInfo.page,
         pageSize: size,
         typeId: this.curryTypeId
       })
     },
+    async doDeleteResource () {
+      const result = await getResourceList({
+        pageNum: this.pageInfo.page,
+        pageSize: this.pageInfo.size,
+        typeId: this.curryTypeId
+      })
+      const { data } = result.data
+      // console.log(data)
+      this.resourceDate = data.list
+      this.resourceDate.map((elm,index) => {
+        const params = {
+          id: elm._id
+        }
+        if (!index) {
+          deleteResource(params.id) // 有bug
+        }
+        return params
+      })
+    },
+    async getSearchdata () {
+      if (this.keyWord === '') {
+        this.doGetResource({
+          pageNum: this.pageInfo.page,
+          pageSize: this.pageInfo.size,
+          typeId: this.curryTypeId
+        })
+      } else {
+        const result = await getSearch({
+          pageNum: this.pageInfo.page,
+          pageSize: this.pageInfo.size,
+          typeId: this.curryTypeId,
+          keyWord: this.keyWord
+        })
+        const { data } = result.data
+        this.resourceDate = data.list
+      }
+    },
     async doGetResource (params) {
       const result = await getResourceList(params)
       const { data } = result.data
       this.resourceDate = data.list
       this.pageInfo.total = data.total
-
-},
-// DogetDataCenter() {
-//       getDataCenter().then(res => {
-//         if (res.success) {
-//           var result = res.data;
-//           console.log(result);
-//           this.data1 = result.data;
-//           var params = {
-//             typeId: this.typeId,
-//             // keyWord: '',
-//             pageNum: 1,
-//             pageSize: 10
-//           };
-//           console.log(params.typeId);
-//           getResourceList(params).then(res => {
-//             if (res.success) {
-//               console.log(res);
-//               var result = res.data;
-//               console.log(result);
-//               this.data2 = result.data.list;
-//             }
-//           });
-//         }
-//       });
-//     },
-//     getkey(e,k){
-// // console.log(k)
-// var params={
-//   typeId:k,
-//   pageNum:1,
-//   pageSize:10
-// }
-// this.typeId='';
-// this.typeId=params.typeId;
-// console.log(params.typeId)
-// this.DogetDataCenter();
-//     }
+    }
   }
 }
 </script>
@@ -197,5 +244,8 @@ a {
     color: #515a6e;
     font-size: 13px;
   }
+}
+.ivu-btn-success{
+  margin-left:5px;
 }
 </style>
