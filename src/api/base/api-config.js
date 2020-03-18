@@ -22,7 +22,8 @@ const baseApi = {
     getDataCenter: (M_BASE_PATH.concat('resource/type')),
     getResourceList: (M_BASE_PATH.concat('resource/list')),
     deleteResource: (M_BASE_PATH.concat('resource/')),
-    addResource: (M_BASE_PATH.concat('resource'))
+    addResource: (M_BASE_PATH.concat('resource')),
+    createType: (M_BASE_PATH.concat('resource/type'))
   }
 }
 

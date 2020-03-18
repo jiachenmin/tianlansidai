@@ -30,14 +30,17 @@
                 @on-ok="ok"
                 @on-cancel="cancel">
                  <Form ref="formValidate" :model="formValidate" :rules="ruleValidate" :label-width="80">
-        <FormItem label="名称" prop="name" disabled="true">
-            <Input v-model="formValidate.name" placeholder="Enter your name"></Input>
+         <FormItem label="所属资源类型" prop="resourceType">
+            <Input v-model="name" disabled></Input>
+        </FormItem>
+        <FormItem label="名称" prop="name">
+            <Input v-model="formValidate.name" placeholder="请输入名称"></Input>
         </FormItem>
         <FormItem label="编号" prop="mail">
-            <Input v-model="formValidate.mail" placeholder="Enter your e-mail"></Input>
+            <Input v-model="formValidate.mail" placeholder="请输入英文编号"></Input>
         </FormItem>
                 <FormItem label="备注" prop="desc">
-            <Input v-model="formValidate.desc" type="textarea" :autosize="{minRows: 2,maxRows: 5}" placeholder="Enter something..."></Input>
+            <Input v-model="formValidate.desc" type="textarea" :autosize="{minRows: 2,maxRows: 5}" placeholder="请输入备注"></Input>
         </FormItem>
     </Form>
             </Modal>
@@ -45,12 +48,41 @@
           </div>
           <Divider />
           <Table :columns="columns1" border :data="resourceDate">
-              <template slot-scope="{ row, index }" slot="action">
-            <Button type="primary" size="small" style="margin-right: 5px">查看</Button>
+              <template slot-scope="{ row,index }" slot="action">
+            <Button type="primary" size="small" style="margin-right: 5px" @click="modal2 = true">查看</Button>
+             <Modal
+        v-model="modal2"
+        title="资源详情"
+        @on-ok="modal3=true"
+        @on-cancel="cancel">
+        <p><span>名称:</span>{{row.name}}</p>
+        <p><span>编号:</span>{{row.number}}</p>
+        <p><span>备注:</span>{{row.memo}}</p>
+    </Modal>
+     <Modal
+                v-model="modal3"
+                title="编辑资源"
+                @on-ok="ok"
+                @on-cancel="cancel">
+                 <Form ref="formValidate" :model="formValidate" :rules="ruleValidate" :label-width="80">
+         <FormItem label="所属资源类型" prop="resourceType">
+            <Input v-model="name" disabled></Input>
+        </FormItem>
+        <FormItem label="名称" prop="name">
+            <Input v-model="row.name" placeholder="请输入名称"></Input>
+        </FormItem>
+        <FormItem label="编号" prop="mail">
+            <Input v-model="row.number" placeholder="请输入英文编号"></Input>
+        </FormItem>
+                <FormItem label="备注" prop="desc">
+            <Input v-model="row.memo" type="textarea" :autosize="{minRows: 2,maxRows: 5}" placeholder="请输入备注"></Input>
+        </FormItem>
+    </Form>
+            </Modal>
              <Poptip
         confirm
         title="您确定删除这条内容吗？"
-        @on-ok="doDeleteResource"
+        @on-ok="doDeleteResource(row)"
         transfer>
         <Button type="error" size="small">删除</Button>
     </Poptip>
@@ -64,7 +96,7 @@
 </template>
 <script>
 import {
-  getDataCenter, getResourceList, deleteResource, getSearch
+  getDataCenter, getResourceList, deleteResource, getSearch, addResource
 } from '@/api/system-configs/data-center.js'
 
 export default {
@@ -81,18 +113,17 @@ export default {
         desc: ''
       },
       ruleValidate: {
-                    name: [
-                        { required: true, message: '请输入名称', trigger: 'blur'}
-                    ],
-                    mail: [
-                        { required: true, message: 'Mailbox cannot be empty', trigger: 'blur' }
-                        // { type: 'text', message: 'Incorrect email format', trigger: 'blur' }
-                    ],
-                      desc: [
-                        { required: true, message: 'Please enter a personal introduction', trigger: 'blur' },
-                        { type: 'string', message: 'Introduce no less than 20 words', trigger: 'blur' }
-                    ]
-                },
+        name: [
+          { required: true, message: '资源名称为必填项', trigger: 'blur'}
+        ],
+        mail: [
+          { required: true, message: '编号为6-20位字符', trigger: 'blur' },
+          { pattern: '^[0-9a-zA-Z]{6,20}$', message: '请输入英文或数字编号' }
+        ],
+        desc: [
+          { required: false, message: 'Please enter a personal introduction', trigger: 'blur' }
+        ]
+      },
       resourceTree: [],
       columns1: [
         {
@@ -123,16 +154,31 @@ export default {
       },
       resourceDate: [],
       curryTypeId: '',
-      modal1: false
+      modal1: false,
+      modal2: false,
+      modal3: false
     }
   },
   methods: {
-     ok () {
-                this.$Message.info('Clicked ok');
-            },
-            cancel () {
-                this.$Message.info('Clicked cancel');
-            },
+    async ok () {
+      await addResource({
+        resourceTypeId: this.curryTypeId,
+        number: this.formValidate.mail,
+        name: this.formValidate.name,
+        memo: this.formValidate.desc
+      })
+      this.doGetResource({
+        pageNum: this.pageInfo.page,
+        pageSize: this.pageInfo.size,
+        typeId: this.curryTypeId
+      })
+      this.formValidate.mail = ''
+      this.formValidate.name = ''
+      this.formValidate.desc = ''
+    },
+    cancel () {
+      this.$Message.info('Clicked cancel')
+    },
     async doGetResourceDate () {
       const result = await getDataCenter()
       const { data } = result.data
@@ -180,23 +226,12 @@ export default {
         typeId: this.curryTypeId
       })
     },
-    async doDeleteResource () {
-      const result = await getResourceList({
+    async doDeleteResource (row) {
+      await deleteResource(row._id)
+      this.doGetResource({
         pageNum: this.pageInfo.page,
         pageSize: this.pageInfo.size,
         typeId: this.curryTypeId
-      })
-      const { data } = result.data
-      // console.log(data)
-      this.resourceDate = data.list
-      this.resourceDate.map((elm,index) => {
-        const params = {
-          id: elm._id
-        }
-        if (!index) {
-          deleteResource(params.id) // 有bug
-        }
-        return params
       })
     },
     async getSearchdata () {
@@ -248,4 +283,13 @@ a {
 .ivu-btn-success{
   margin-left:5px;
 }
+.ivu-modal-body p{
+  margin: 15px 100px;
+  span{
+  font-size: 12px;
+  font-weight: bold;
+  margin-right: 10px;
+}
+}
+
 </style>

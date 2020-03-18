@@ -23,9 +23,9 @@ export const deleteResource = (params) => {
 }
 export const addResource = (params) => {
   return axios.req({
-    params,
+    data: params,
     method: 'post',
-    url: Api.dataCenter.deleteResource
+    url: Api.dataCenter.addResource
   })
 }
 export const getSearch = (params) => {
@@ -33,5 +33,12 @@ export const getSearch = (params) => {
     params,
     method: 'get',
     url: Api.dataCenter.getResourceList
+  })
+}
+export const createType = (params) => {
+  return axios.req({
+    params,
+    method: 'post',
+    url: Api.dataCenter.createType
   })
 }
