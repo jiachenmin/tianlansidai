@@ -24,79 +24,77 @@
             </i-col>
             <i-col>
                <Button type="success" @click="modal1 = true">添加</Button>
-            <Modal
-                v-model="modal1"
-                title="添加资源"
-                @on-ok="ok"
-                @on-cancel="cancel">
-                 <Form ref="formValidate" :model="formValidate" :rules="ruleValidate" :label-width="80">
-         <FormItem label="所属资源类型" prop="resourceType">
-            <Input v-model="name" disabled></Input>
-        </FormItem>
-        <FormItem label="名称" prop="name">
-            <Input v-model="formValidate.name" placeholder="请输入名称"></Input>
-        </FormItem>
-        <FormItem label="编号" prop="mail">
-            <Input v-model="formValidate.mail" placeholder="请输入英文编号"></Input>
-        </FormItem>
-                <FormItem label="备注" prop="desc">
-            <Input v-model="formValidate.desc" type="textarea" :autosize="{minRows: 2,maxRows: 5}" placeholder="请输入备注"></Input>
-        </FormItem>
-    </Form>
-            </Modal>
             </i-col>
           </div>
           <Divider />
           <Table :columns="columns1" border :data="resourceDate">
               <template slot-scope="{ row,index }" slot="action">
-            <Button type="primary" size="small" style="margin-right: 5px" @click="modal2 = true">查看</Button>
-             <Modal
-        v-model="modal2"
-        title="资源详情"
-        @on-ok="modal3=true"
-        @on-cancel="cancel">
-        <p><span>名称:</span>{{row.name}}</p>
-        <p><span>编号:</span>{{row.number}}</p>
-        <p><span>备注:</span>{{row.memo}}</p>
+              <Button type="primary" size="small" style="margin-right: 5px" @click="curryClickRow(row)">详情</Button>
+             <Poptip
+                confirm
+                title="您确定删除这条内容吗？"
+                @on-ok="doDeleteResource(row)"
+                transfer>
+                <Button type="error" size="small">删除</Button>
+            </Poptip>
+        </template>
+          </Table>
+          <Page :current="pageInfo.page" :pageSize="pageInfo.size" :total="pageInfo.total" @on-change="onPageChange" on-page-size-change="onPageSizeChange(size)" show-total/>
+        </Card>
+      </i-col>
+    </Row>
+     <Modal
+       v-model="modal1"
+       title="添加资源"
+       @on-ok="addSuccess('error','formValidate')">
+    <Form ref="formValidate" :model="formValidate" :rules="ruleValidate" :label-width="80">
+      <FormItem label="所属资源类型" prop="resourceType">
+        <Input v-model="name" disabled></Input>
+      </FormItem>
+      <FormItem label="名称" prop="name">
+        <Input v-model="formValidate.name" placeholder="请输入名称"></Input>
+      </FormItem>
+      <FormItem label="编号" prop="mail">
+        <Input v-model="formValidate.mail" placeholder="请输入英文编号"></Input>
+      </FormItem>
+      <FormItem label="备注" prop="desc">
+        <Input v-model="formValidate.desc" type="textarea" :autosize="{minRows: 2,maxRows: 5}" placeholder="请输入备注"></Input>
+      </FormItem>
+   </Form>
+ </Modal>
+ <Modal
+    v-model="modal2"
+    title="资源详情"
+    @on-ok="modal3=true">
+        <p><span>名称:</span>{{this.curryClick.name}}</p>
+        <p><span>编号:</span>{{this.curryClick.number}}</p>
+        <p><span>备注:</span>{{this.curryClick.memo}}</p>
     </Modal>
      <Modal
-                v-model="modal3"
-                title="编辑资源"
-                @on-ok="ok"
-                @on-cancel="cancel">
-                 <Form ref="formValidate" :model="formValidate" :rules="ruleValidate" :label-width="80">
+          v-model="modal3"
+          title="编辑资源"
+          @on-ok="writeResource('error')"
+          >
+       <Form ref="formValidate" :model="formValidate" :rules="ruleValidate" :label-width="80">
          <FormItem label="所属资源类型" prop="resourceType">
             <Input v-model="name" disabled></Input>
         </FormItem>
         <FormItem label="名称" prop="name">
-            <Input v-model="row.name" placeholder="请输入名称"></Input>
+            <Input v-model="curryClick.name" placeholder="请输入名称"></Input>
         </FormItem>
         <FormItem label="编号" prop="mail">
-            <Input v-model="row.number" placeholder="请输入英文编号"></Input>
+            <Input v-model="curryClick.number" placeholder="请输入英文编号"></Input>
         </FormItem>
                 <FormItem label="备注" prop="desc">
-            <Input v-model="row.memo" type="textarea" :autosize="{minRows: 2,maxRows: 5}" placeholder="请输入备注"></Input>
+            <Input v-model="curryClick.memo" type="textarea" :autosize="{minRows: 2,maxRows: 5}" placeholder="请输入备注"></Input>
         </FormItem>
     </Form>
             </Modal>
-             <Poptip
-        confirm
-        title="您确定删除这条内容吗？"
-        @on-ok="doDeleteResource(row)"
-        transfer>
-        <Button type="error" size="small">删除</Button>
-    </Poptip>
-        </template>
-          </Table>
-          <Page :current="pageInfo.page" :pageSize="pageInfo.size" :total="pageInfo.total" @on-change="onPageChange" on-page-size-change="onPageSizeChange" show-sizer show-total/>
-        </Card>
-      </i-col>
-    </Row>
   </div>
 </template>
 <script>
 import {
-  getDataCenter, getResourceList, deleteResource, getSearch, addResource
+  getDataCenter, getResourceList, deleteResource, addResource
 } from '@/api/system-configs/data-center.js'
 
 export default {
@@ -107,6 +105,7 @@ export default {
     return {
       name: '',
       keyWord: '',
+      curryClick: {},
       formValidate: {
         name: '',
         mail: '',
@@ -119,6 +118,7 @@ export default {
         mail: [
           { required: true, message: '编号为6-20位字符', trigger: 'blur' },
           { pattern: '^[0-9a-zA-Z]{6,20}$', message: '请输入英文或数字编号' }
+
         ],
         desc: [
           { required: false, message: 'Please enter a personal introduction', trigger: 'blur' }
@@ -156,28 +156,73 @@ export default {
       curryTypeId: '',
       modal1: false,
       modal2: false,
-      modal3: false
+      modal3: false,
+      resourceID: ''
     }
   },
   methods: {
-    async ok () {
-      await addResource({
+    addSuccess (type, name) {
+      this.$refs[name].validate((valid) => {
+        if (valid) {
+          this.addSuccessTest(type)
+          this.formValidate.mail = ''
+          this.formValidate.name = ''
+          this.formValidate.desc = ''
+        } else {
+          this.$Message.error('编号输入格式错误!')
+          this.formValidate.mail = ''
+          this.formValidate.name = ''
+          this.formValidate.desc = ''
+        }
+      })
+    },
+    async addSuccessTest (type) {
+      const result = await addResource({
         resourceTypeId: this.curryTypeId,
         number: this.formValidate.mail,
         name: this.formValidate.name,
         memo: this.formValidate.desc
       })
+      console.log(result.data.code)
+      if (result.data.code === 4) {
+        this.$Message[type]({
+          content: '已存在编号，请重新输入',
+          duration: 5,
+          background: true
+        })
+      }
       this.doGetResource({
         pageNum: this.pageInfo.page,
         pageSize: this.pageInfo.size,
         typeId: this.curryTypeId
       })
-      this.formValidate.mail = ''
-      this.formValidate.name = ''
-      this.formValidate.desc = ''
     },
-    cancel () {
-      this.$Message.info('Clicked cancel')
+    async writeResource (type) {
+      const result = await addResource({
+        resourceTypeId: this.curryTypeId,
+        number: this.curryClick.number,
+        name: this.curryClick.name,
+        memo: this.curryClick.memo,
+        resourceID: this.resourceID
+      })
+      console.log(result.data.code)
+      if (result.data.code === 4) {
+        this.$Message[type]({
+          content: '已存在编号，请重新输入',
+          duration: 5,
+          background: true
+        })
+      }
+      this.doGetResource({
+        pageNum: this.pageInfo.page,
+        pageSize: this.pageInfo.size,
+        typeId: this.curryTypeId
+      })
+    },
+    curryClickRow (row) {
+      this.modal2 = true
+      this.curryClick = row
+      this.resourceID = this.curryClick._id
     },
     async doGetResourceDate () {
       const result = await getDataCenter()
@@ -210,7 +255,7 @@ export default {
     onPageChange (page) {
       this.pageInfo.page = page
       console.log(page)
-      debugger
+      // debugger
       this.doGetResource({
         pageNum: page,
         pageSize: this.pageInfo.size,
@@ -219,7 +264,7 @@ export default {
     },
     onPageSizeChange (size) {
       this.pageInfo.size = size
-      // console.log(size)
+      console.log(size)
       this.doGetResource({
         pageNum: this.pageInfo.page,
         pageSize: size,
@@ -235,24 +280,14 @@ export default {
       })
     },
     async getSearchdata () {
-      if (this.keyWord === '') {
-        this.doGetResource({
-          pageNum: this.pageInfo.page,
-          pageSize: this.pageInfo.size,
-          typeId: this.curryTypeId
-        })
-      } else {
-        const result = await getSearch({
-          pageNum: this.pageInfo.page,
-          pageSize: this.pageInfo.size,
-          typeId: this.curryTypeId,
-          keyWord: this.keyWord
-        })
-        const { data } = result.data
-        this.resourceDate = data.list
-      }
+      this.doGetResource({
+        pageNum: this.pageInfo.page,
+        pageSize: this.pageInfo.size,
+        typeId: this.curryTypeId
+      })
     },
     async doGetResource (params) {
+      if (this.keyWord) { Object.assign(params, { keyWord: this.keyWord }) }
       const result = await getResourceList(params)
       const { data } = result.data
       this.resourceDate = data.list
