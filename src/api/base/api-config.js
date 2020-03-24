@@ -24,6 +24,11 @@ const baseApi = {
     deleteResource: (M_BASE_PATH.concat('resource/')),
     addResource: (M_BASE_PATH.concat('resource')),
     createType: (M_BASE_PATH.concat('resource/type'))
+  },
+  powerCenter: {
+    createRole: (M_BASE_PATH.concat('permission/role')),
+    getRole: (M_BASE_PATH.concat('permission/role')),
+    getPermissionList: (M_BASE_PATH.concat('permission/list'))
   }
 }
 

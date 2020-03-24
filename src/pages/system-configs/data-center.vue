@@ -307,7 +307,7 @@ a {
   color: #515a6e;
 }
 .date-list {
-  margin: 10px auto;
+  margin: 5px auto;
   list-style: none;
 
   .ivu-btn-ghost {
